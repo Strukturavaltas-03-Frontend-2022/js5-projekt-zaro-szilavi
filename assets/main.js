@@ -60,7 +60,7 @@ async function setUpTable() {
     tr.appendChild(cancel);
     cancel.textContent = `Elvetés`;
   }
-  showButtons();
+  buttonsAction();
 }
 
 setUpTable();
@@ -70,9 +70,6 @@ async function deleteUser(user) {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   });
-  const users = await response.json();
-  console.log(response);
-  console.log(users);
 }
 
 async function editUser(user) {
@@ -81,12 +78,9 @@ async function editUser(user) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(modedUser),
   });
-  const users = await response.json();
-  console.log(response);
-  console.log(users);
 }
 
-function showButtons() {
+function buttonsAction() {
   const editBtn = document.querySelectorAll(".edit");
   const removeBtn = document.querySelectorAll(".remove");
   removeBtn.forEach((element) => {
@@ -117,30 +111,84 @@ function showButtons() {
     userName.readOnly = false;
     emailAddress.readOnly = false;
     address.readOnly = false;
-    //itt unlock az összes inputot a rowban és disabled az összes másik gomb
-    //a mentés és a mégse gomb megjeelnítése
-    //a mégse gombra visszalockolom, majd az összes readonlyt true-ra állítom és újra klikkelhetővé teszem a gombokat
-    //ha a módosítás gombra kattintok, akkor jön fügvény
+
+    e.target.closest("tr").children[4].style.visibility = "hidden";
+    e.target.closest("tr").children[5].style.visibility = "hidden";
+    e.target.closest("tr").children[6].style.visibility = "visible";
+    e.target.closest("tr").children[7].style.visibility = "visible";
+
+    const allSaveBtn = document.querySelectorAll(".edit");
+    const allDeleteBtn = document.querySelectorAll(".remove");
+
+    allSaveBtn.forEach((element) => {
+      element.disabled = true;
+    });
+
+    allDeleteBtn.forEach((element) => {
+      element.disabled = true;
+    });
+
+    const cancelBtn = document.querySelectorAll(".cancel");
+
+    cancelBtn.forEach((element) => {
+      element.addEventListener("click", cancelModifi);
+    });
+
+    function cancelModifi() {
+      userId.value = tempUser.id;
+      userName.value = tempUser.name;
+      emailAddress.value = tempUser.emailAddress;
+      address.value = tempUser.address;
+
+      userName.readOnly = true;
+      emailAddress.readOnly = true;
+      address.readOnly = true;
+
+      e.target.closest("tr").children[4].style.visibility = "visible";
+      e.target.closest("tr").children[5].style.visibility = "visible";
+      e.target.closest("tr").children[6].style.visibility = "hidden";
+      e.target.closest("tr").children[7].style.visibility = "hidden";
+
+      allSaveBtn.forEach((element) => {
+        element.disabled = false;
+      });
+
+      allDeleteBtn.forEach((element) => {
+        element.disabled = false;
+      });
+    }
+    const saveBtn = document.querySelectorAll(".save");
+
+    saveBtn.forEach((element) => {
+      element.addEventListener("click", modifiUserData);
+    });
+
+    function modifiUserData() {
+      modedUser = {
+        id: userId,
+        name: userName.value,
+        emailAddress: emailAddress.value,
+        address: address.value,
+      };
+      userName.readOnly = true;
+      emailAddress.readOnly = true;
+      address.readOnly = true;
+
+      e.target.closest("tr").children[4].style.visibility = "visible";
+      e.target.closest("tr").children[5].style.visibility = "visible";
+      e.target.closest("tr").children[6].style.visibility = "hidden";
+      e.target.closest("tr").children[7].style.visibility = "hidden";
+
+      allSaveBtn.forEach((element) => {
+        element.disabled = false;
+      });
+
+      allDeleteBtn.forEach((element) => {
+        element.disabled = false;
+      });
+      editUser(`http://localhost:3000/users/${userId}`);
+    }
   }
 }
 
-function mod() {
-  let userId = e.target.closest("tr").firstChild.innerHTML;
-  let userName = e.target.closest("tr").children[1];
-  let emailAddress = e.target.closest("tr").children[2];
-  let address = e.target.closest("tr").children[3];
-  modedUser = {
-    id: userId,
-    name: userName.value,
-    emailAddress: emailAddress.value,
-    address: address.value,
-  };
-  userName.readOnly = true;
-  emailAddress.readOnly = true;
-  address.readOnly = true;
-  editUser(`http://localhost:3000/users/${userId}`);
-}
-
 //tryokat pls
-//disabledek legyenek a gombok
-//visbilityit használni a gomboknál, azoknak új td
