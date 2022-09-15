@@ -38,6 +38,8 @@ async function setUpTable() {
 
 setUpTable();
 
+//FETCH METÓDUSOK------------------------------------------------------
+
 async function deleteUser(userId) {
   const response = await fetch(url + userId, {
     method: "DELETE",
@@ -61,22 +63,26 @@ async function addUser(userId) {
   });
 }
 
+//gombok működésre bírása --------------------------------------------
+
 function buttonsAction() {
   const editBtn = document.querySelectorAll(".edit");
   const removeBtn = document.querySelectorAll(".remove");
   removeBtn.forEach((element) => {
     element.addEventListener("click", deleteRow);
   });
+
+  //user törlése ---------------------------
   function deleteRow(e) {
     let userId = e.target.closest("tr").querySelector('.id').textContent;
     e.target.closest("tr").remove();
     deleteUser(userId);
   }
 
+  //user módosítása ---------------------------
   editBtn.forEach((element) => {
     element.addEventListener("click", editRow);
   });
-
   function editRow(e) {
     let userId = e.target.closest("tr").querySelector('td.id').textContent;
     let userName = e.target.closest("tr").querySelector('.input-name');
@@ -113,7 +119,7 @@ function buttonsAction() {
     cancelBtn.forEach((element) => {
       element.addEventListener("click", cancelModifi);
     });
-
+    //user módosításának visszavonása  ---------------------------
     function cancelModifi() {
       userId.value = tempUser.id;
       userName.value = tempUser.name;
@@ -147,7 +153,7 @@ function buttonsAction() {
     saveBtn.forEach((element) => {
       element.addEventListener("click", modifiUserData);
     });
-
+    //user módosításának megerősítése -----------------------
     function modifiUserData() {
       modedUser = {
         id: userId,
@@ -178,21 +184,63 @@ function buttonsAction() {
     }
   }
   
+  // új user hozzáadása ------------------------------
   const createNewUser = document.querySelector('.newUser')
 
   createNewUser.addEventListener('click', createNewRow)
 
+
   function createNewRow() {
+    const newUserBtn = document.querySelector('.newUser')
+    newUserBtn.disabled = true
     const tBody = document.querySelector("table tbody");
-    tBody.innerHTML = `<tr>
-    <td class="id"></td>
-    <td><input class="input-name" readonly="" value=""></td>
-    <td><input class="input-email" readonly="" value=""></td>
-    <td><input class="input-address" readonly="" value=""></td>
-    <td><button type="button" class="save" style="visibility: visible;">Módosítás</button></td>
-    <td><button type="button" class="cancel" style="visibility: visible;">Elvetés</button></td>
+    const userId = document.querySelectorAll('.id')
+    let highestNum = 0
+    userId.forEach(i => {
+      if(Number(i.textContent) > highestNum) {
+        highestNum = Number(i.textContent)
+      }
+    });
+    const newUSerRow =`<tr>
+    <td class="id">${highestNum + 1}</td>
+    <td><input class="newUser-input-name"></td>
+    <td><input class="newUser-input-email"></td>
+    <td><input class="newUser-input-address"></td>
+    <td><button type="button" class="addUser" style="visibility: visible;">Hozzáad</button></td>
+    <td><button type="button" class="undoUser" style="visibility: visible;">Mégse</button></td>
     </tr>
-    ` + tBody.innerHTML;
+    `
+    tBody.innerHTML = newUSerRow + tBody.innerHTML;
+
+    const newUserId = document.querySelector('.id')
+    const newUserName = document.querySelector('.newUser-input-name')
+    const newUserEmail = document.querySelector('.newUser-input-email')
+    const newUserAddress = document.querySelector('.newUser-input-address')
+    const addNewUserBtn = document.querySelector('.addUser')
+    const undoNewUserBtn = document.querySelector('.undoUser')
+  
+
+    addNewUserBtn.addEventListener('click', postNewUser)
+    
+    function postNewUser() {
+      newUser = {
+        id: newUserId.textContent,
+        name: newUserName.value,
+        emailAddress: newUserEmail.value,
+        address: newUserAddress.value,
+      }
+      newUserBtn.disabled = false
+      console.log(newUserId.textContent)
+      //addUser(newUserId.textContent)
+    }
+
+    undoNewUserBtn.addEventListener('click', undoNewUser)
+
+    function undoNewUser(e) {
+      e.target.closest("tr").remove();
+      newUserBtn.disabled = false
+    }
+
   }
 }
 
