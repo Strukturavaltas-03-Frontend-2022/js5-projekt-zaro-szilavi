@@ -55,8 +55,8 @@ async function editUser(userId) {
   });
 }
 
-async function addUser(userId) {
-  const response = await fetch(url + userId, {
+async function addUser() {
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newUser),
@@ -224,14 +224,13 @@ function buttonsAction() {
     
     function postNewUser() {
       newUser = {
-        id: newUserId.textContent,
+        id: Number(newUserId.textContent),
         name: newUserName.value,
         emailAddress: newUserEmail.value,
         address: newUserAddress.value,
       }
       newUserBtn.disabled = false
-      console.log(newUserId.textContent)
-      //addUser(newUserId.textContent)
+      addUser()
     }
 
     undoNewUserBtn.addEventListener('click', undoNewUser)
