@@ -2,9 +2,7 @@ const url = "http://localhost:3000/users/";
 let modedUser = {};
 let newUser = {};
 
-//itt még rá kéne jönnöm, hogy a methodok miként működnek
-
-//kiolvasom a szerverről az adatokat és megjelenítem az oldalon
+//ADATOK KIOLVASÁSA ÉS MEGJELENÍTÉSE--------------------------------------------
 async function get(url) {
   const response = await fetch(url);
   const users = await response.json();
@@ -12,13 +10,11 @@ async function get(url) {
 }
 get(url);
 
-
 async function setUpTable() {
-  let rowsHTML = '';
+  let rowsHTML = "";
   const users = await get(url);
-  
+
   for (let i = 0; i < users.length; i++) {
-    //console.log(users[i]);
     rowsHTML += `
     <tr>
     <td class="id">${users[i].id}</td>
@@ -27,18 +23,18 @@ async function setUpTable() {
     <td><input class="input-address" readonly="" value="${users[i].address}"></td>
     <td><button type="button" class="edit">Szerkesztés</button></td>
     <td><button type="button" class="remove">Törlés</button></td>
-    <td><button type="button" class="save" style="visibility: hidden;">Módosítás</button></td>
-    <td><button type="button" class="cancel" style="visibility: hidden;">Elvetés</button></td>
+    <td><button type="button" class="save" style="visibility: hidden;">Mentés</button></td>
+    <td><button type="button" class="cancel" style="visibility: hidden;">Visszavonás</button></td>
     </tr>
     `;
   }
-  document.querySelector("table tbody").innerHTML=rowsHTML;
+  document.querySelector("table tbody").innerHTML = rowsHTML;
   buttonsAction();
 }
 
 setUpTable();
 
-//FETCH METÓDUSOK------------------------------------------------------
+//FETCH METÓDUSOK--------------------------------------------------------------------------------
 
 async function deleteUser(userId) {
   const response = await fetch(url + userId, {
@@ -63,92 +59,63 @@ async function addUser() {
   });
 }
 
-//gombok működésre bírása --------------------------------------------
+//GOMBOK MŰKÖDÉSRE BÍRÁSA-----------------------------------------------------------------------
 
 function buttonsAction() {
   const editBtn = document.querySelectorAll(".edit");
   const removeBtn = document.querySelectorAll(".remove");
+
+  //USER TÖRLÉSE--------------------------------------------------------------------------------
+
   removeBtn.forEach((element) => {
     element.addEventListener("click", deleteRow);
   });
 
-  //user törlése ---------------------------
   function deleteRow(e) {
-    let userId = e.target.closest("tr").querySelector('.id').textContent;
+    let userId = e.target.closest("tr").querySelector(".id").textContent;
     e.target.closest("tr").remove();
     deleteUser(userId);
   }
 
-  //user módosítása ---------------------------
+  //USER MÓDOSÍTÁSA ----------------------------------------------------------------------------
+
   editBtn.forEach((element) => {
     element.addEventListener("click", editRow);
   });
+
   function editRow(e) {
-    let userId = e.target.closest("tr").querySelector('td.id').textContent;
-    let userName = e.target.closest("tr").querySelector('.input-name');
-    let emailAddress = e.target.closest("tr").querySelector('.input-email');
-    let address = e.target.closest("tr").querySelector('.input-address');
+    let userId = e.target.closest("tr").querySelector("td.id").textContent;
+    let userName = e.target.closest("tr").querySelector(".input-name");
+    let emailAddress = e.target.closest("tr").querySelector(".input-email");
+    let address = e.target.closest("tr").querySelector(".input-address");
+
     tempUser = {
       id: userId,
       name: userName.value,
       emailAddress: emailAddress.value,
       address: address.value,
     };
-    userName.readOnly = false;
-    emailAddress.readOnly = false;
-    address.readOnly = false;
 
-    e.target.closest("tr").querySelector('.save').style.visibility = "visible";
-    e.target.closest("tr").querySelector('.cancel').style.visibility = "visible";
-    e.target.closest("tr").querySelector('.edit').style.visibility = "hidden";
-    e.target.closest("tr").querySelector('.remove').style.visibility = "hidden";
+    changeBtnStatus(e);
 
-    const allEditBtn = document.querySelectorAll(".edit");
-    const allDeleteBtn = document.querySelectorAll(".remove");
-
-    allEditBtn.forEach((element) => {
-      element.disabled = true;
-    });
-
-    allDeleteBtn.forEach((element) => {
-      element.disabled = true;
-    });
+    //USER ADATAINAK MÓDOSÍTÁSÁNAK VISSZAVONÁSA  ---------------------------------------------
 
     const cancelBtn = document.querySelectorAll(".cancel");
 
     cancelBtn.forEach((element) => {
       element.addEventListener("click", cancelModifi);
     });
-    //user módosításának visszavonása  ---------------------------
+
     function cancelModifi() {
       userId.value = tempUser.id;
       userName.value = tempUser.name;
       emailAddress.value = tempUser.emailAddress;
       address.value = tempUser.address;
 
-      userName.readOnly = true;
-      emailAddress.readOnly = true;
-      address.readOnly = true;
-
-      e.target.closest("tr").querySelector('.save').style.visibility = "hidden";
-      e.target.closest("tr").querySelector('.cancel').style.visibility = "hidden";
-      e.target.closest("tr").querySelector('.edit').style.visibility = "visible";
-      e.target.closest("tr").querySelector('.remove').style.visibility = "visible";
-
-      const allEditBtn = document.querySelectorAll(".edit");
-      const allDeleteBtn = document.querySelectorAll(".remove");
-
-      allEditBtn.forEach((element) => {
-        element.disabled = false;
-      });
-
-      allDeleteBtn.forEach((element) => {
-        element.disabled = false;
-      });
+      changeBtnStatus(e);
     }
-    
+
     const saveBtn = document.querySelectorAll(".save");
-  
 
     saveBtn.forEach((element) => {
       element.addEventListener("click", modifiUserData);
@@ -161,47 +128,28 @@ function buttonsAction() {
         emailAddress: emailAddress.value,
         address: address.value,
       };
-      userName.readOnly = true;
-      emailAddress.readOnly = true;
-      address.readOnly = true;
-
-      e.target.closest("tr").querySelector('.save').style.visibility = "visible";
-      e.target.closest("tr").querySelector('.cancel').style.visibility = "visible";
-      e.target.closest("tr").querySelector('.edit').style.visibility = "hidden";
-      e.target.closest("tr").querySelector('.remove').style.visibility = "hidden";
-
-      const allEditBtn = document.querySelectorAll(".edit");
-      const allDeleteBtn = document.querySelectorAll(".delete");
-
-      allEditBtn.forEach((element) => {
-        element.disabled = false;
-      });
-
-      allDeleteBtn.forEach((element) => {
-        element.disabled = false;
-      });
+      changeBtnStatus(e);
       editUser(userId);
     }
   }
-  
+
   // új user hozzáadása ------------------------------
-  const createNewUser = document.querySelector('.newUser')
+  const createNewUser = document.querySelector(".newUser");
 
-  createNewUser.addEventListener('click', createNewRow)
-
+  createNewUser.addEventListener("click", createNewRow);
 
   function createNewRow() {
-    const newUserBtn = document.querySelector('.newUser')
-    newUserBtn.disabled = true
+    const newUserBtn = document.querySelector(".newUser");
+    newUserBtn.disabled = true;
     const tBody = document.querySelector("table tbody");
-    const userId = document.querySelectorAll('.id')
-    let highestNum = 0
-    userId.forEach(i => {
-      if(Number(i.textContent) > highestNum) {
-        highestNum = Number(i.textContent)
+    const userId = document.querySelectorAll(".id");
+    let highestNum = 0;
+    userId.forEach((i) => {
+      if (Number(i.textContent) > highestNum) {
+        highestNum = Number(i.textContent);
       }
     });
-    const newUSerRow =`<tr>
+    const newUSerRow = `<tr>
     <td class="id">${highestNum + 1}</td>
     <td><input class="newUser-input-name"></td>
     <td><input class="newUser-input-email"></td>
@@ -209,38 +157,88 @@ function buttonsAction() {
     <td><button type="button" class="addUser" style="visibility: visible;">Hozzáad</button></td>
     <td><button type="button" class="undoUser" style="visibility: visible;">Mégse</button></td>
     </tr>
-    `
+    `;
     tBody.innerHTML = newUSerRow + tBody.innerHTML;
 
-    const newUserId = document.querySelector('.id')
-    const newUserName = document.querySelector('.newUser-input-name')
-    const newUserEmail = document.querySelector('.newUser-input-email')
-    const newUserAddress = document.querySelector('.newUser-input-address')
-    const addNewUserBtn = document.querySelector('.addUser')
-    const undoNewUserBtn = document.querySelector('.undoUser')
-  
+    const newUserId = document.querySelector(".id");
+    const newUserName = document.querySelector(".newUser-input-name");
+    const newUserEmail = document.querySelector(".newUser-input-email");
+    const newUserAddress = document.querySelector(".newUser-input-address");
+    const addNewUserBtn = document.querySelector(".addUser");
+    const undoNewUserBtn = document.querySelector(".undoUser");
 
-    addNewUserBtn.addEventListener('click', postNewUser)
-    
+    addNewUserBtn.addEventListener("click", postNewUser);
+
     function postNewUser() {
       newUser = {
         id: Number(newUserId.textContent),
         name: newUserName.value,
         emailAddress: newUserEmail.value,
         address: newUserAddress.value,
-      }
-      newUserBtn.disabled = false
-      addUser()
+      };
+      newUserBtn.disabled = false;
+      addUser();
     }
 
-    undoNewUserBtn.addEventListener('click', undoNewUser)
+    undoNewUserBtn.addEventListener("click", undoNewUser);
 
     function undoNewUser(e) {
       e.target.closest("tr").remove();
-      newUserBtn.disabled = false
+      newUserBtn.disabled = false;
     }
-
   }
 }
+
+function changeBtnStatus(e) {
+  const editBtn = document.querySelectorAll(".edit");
+  const removeBtn = document.querySelectorAll(".remove");
+  let userName = e.target.closest("tr").querySelector(".input-name");
+  let emailAddress = e.target.closest("tr").querySelector(".input-email");
+  let address = e.target.closest("tr").querySelector(".input-address");
+  userName.readOnly === false
+    ? (userName.readOnly = true)
+    : (userName.readOnly = false);
+  emailAddress.readOnly === false
+    ? (emailAddress.readOnly = true)
+    : (emailAddress.readOnly = false);
+  address.readOnly === false
+    ? (address.readOnly = true)
+    : (address.readOnly = false);
+
+  e.target.closest("tr").querySelector(".save").style.visibility === "visible"
+    ? (e.target.closest("tr").querySelector(".save").style.visibility =
+        "hidden")
+    : (e.target.closest("tr").querySelector(".save").style.visibility =
+        "visible");
+  e.target.closest("tr").querySelector(".cancel").style.visibility === "visible"
+    ? (e.target.closest("tr").querySelector(".cancel").style.visibility =
+        "hidden")
+    : (e.target.closest("tr").querySelector(".cancel").style.visibility =
+        "visible");
+  e.target.closest("tr").querySelector(".edit").style.visibility === "hidden"
+    ? (e.target.closest("tr").querySelector(".edit").style.visibility =
+        "visible")
+    : (e.target.closest("tr").querySelector(".edit").style.visibility =
+        "hidden");
+  e.target.closest("tr").querySelector(".remove").style.visibility === "hidden"
+    ? (e.target.closest("tr").querySelector(".remove").style.visibility =
+        "visible")
+    : (e.target.closest("tr").querySelector(".remove").style.visibility =
+        "hidden");
+
+  editBtn.forEach((element) => {
+    element.disabled === true
+      ? (element.disabled = false)
+      : (element.disabled = true);
+  });
+
+  removeBtn.forEach((element) => {
+    element.disabled === true
+      ? (element.disabled = false)
+      : (element.disabled = true);
+  });
+}
+
+//a módosítás és a visszavonás csak elsőre működik, másodjára nem
 
 //tryokat pls
