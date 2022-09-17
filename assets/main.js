@@ -96,7 +96,23 @@ function buttonsAction() {
       address: address.value,
     };
 
-    changeBtnStatus(e);
+    userName.readOnly = false;
+    emailAddress.readOnly = false;
+    address.readOnly = false;
+
+    e.target.closest("tr").querySelector(".save").style.visibility = "visible";
+    e.target.closest("tr").querySelector(".cancel").style.visibility =
+      "visible";
+    e.target.closest("tr").querySelector(".edit").style.visibility = "hidden";
+    e.target.closest("tr").querySelector(".remove").style.visibility = "hidden";
+
+    editBtn.forEach((element) => {
+      element.disabled = true;
+    });
+
+    removeBtn.forEach((element) => {
+      element.disabled = true;
+    });
 
     //USER ADATAINAK MÓDOSÍTÁSÁNAK VISSZAVONÁSA  ---------------------------------------------
 
@@ -112,7 +128,25 @@ function buttonsAction() {
       emailAddress.value = tempUser.emailAddress;
       address.value = tempUser.address;
 
-      changeBtnStatus(e);
+      userName.readOnly = true;
+      emailAddress.readOnly = true;
+      address.readOnly = true;
+
+      e.target.closest("tr").querySelector(".save").style.visibility = "hidden";
+      e.target.closest("tr").querySelector(".cancel").style.visibility =
+        "hidden";
+      e.target.closest("tr").querySelector(".edit").style.visibility =
+        "visible";
+      e.target.closest("tr").querySelector(".remove").style.visibility =
+        "visible";
+
+      editBtn.forEach((element) => {
+        element.disabled = false;
+      });
+
+      removeBtn.forEach((element) => {
+        element.disabled = false;
+      });
     }
 
     const saveBtn = document.querySelectorAll(".save");
@@ -122,13 +156,32 @@ function buttonsAction() {
     });
     //user módosításának megerősítése -----------------------
     function modifiUserData() {
+      console.log(emailAddress.value);
       modedUser = {
         id: userId,
         name: userName.value,
         emailAddress: emailAddress.value,
         address: address.value,
       };
-      changeBtnStatus(e);
+      userName.readOnly = true;
+      emailAddress.readOnly = true;
+      address.readOnly = true;
+
+      e.target.closest("tr").querySelector(".save").style.visibility = "hidden";
+      e.target.closest("tr").querySelector(".cancel").style.visibility =
+        "hidden";
+      e.target.closest("tr").querySelector(".edit").style.visibility =
+        "visible";
+      e.target.closest("tr").querySelector(".remove").style.visibility =
+        "visible";
+
+      editBtn.forEach((element) => {
+        element.disabled = false;
+      });
+
+      removeBtn.forEach((element) => {
+        element.disabled = false;
+      });
       editUser(userId);
     }
   }
@@ -188,57 +241,5 @@ function buttonsAction() {
     }
   }
 }
-
-function changeBtnStatus(e) {
-  const editBtn = document.querySelectorAll(".edit");
-  const removeBtn = document.querySelectorAll(".remove");
-  let userName = e.target.closest("tr").querySelector(".input-name");
-  let emailAddress = e.target.closest("tr").querySelector(".input-email");
-  let address = e.target.closest("tr").querySelector(".input-address");
-  userName.readOnly === false
-    ? (userName.readOnly = true)
-    : (userName.readOnly = false);
-  emailAddress.readOnly === false
-    ? (emailAddress.readOnly = true)
-    : (emailAddress.readOnly = false);
-  address.readOnly === false
-    ? (address.readOnly = true)
-    : (address.readOnly = false);
-
-  e.target.closest("tr").querySelector(".save").style.visibility === "visible"
-    ? (e.target.closest("tr").querySelector(".save").style.visibility =
-        "hidden")
-    : (e.target.closest("tr").querySelector(".save").style.visibility =
-        "visible");
-  e.target.closest("tr").querySelector(".cancel").style.visibility === "visible"
-    ? (e.target.closest("tr").querySelector(".cancel").style.visibility =
-        "hidden")
-    : (e.target.closest("tr").querySelector(".cancel").style.visibility =
-        "visible");
-  e.target.closest("tr").querySelector(".edit").style.visibility === "hidden"
-    ? (e.target.closest("tr").querySelector(".edit").style.visibility =
-        "visible")
-    : (e.target.closest("tr").querySelector(".edit").style.visibility =
-        "hidden");
-  e.target.closest("tr").querySelector(".remove").style.visibility === "hidden"
-    ? (e.target.closest("tr").querySelector(".remove").style.visibility =
-        "visible")
-    : (e.target.closest("tr").querySelector(".remove").style.visibility =
-        "hidden");
-
-  editBtn.forEach((element) => {
-    element.disabled === true
-      ? (element.disabled = false)
-      : (element.disabled = true);
-  });
-
-  removeBtn.forEach((element) => {
-    element.disabled === true
-      ? (element.disabled = false)
-      : (element.disabled = true);
-  });
-}
-
-//a módosítás és a visszavonás csak elsőre működik, másodjára nem
 
 //tryokat pls
