@@ -74,6 +74,7 @@ function buttonsAction() {
   function deleteRow(e) {
     let userId = e.target.closest("tr").querySelector(".id").textContent;
     e.target.closest("tr").remove();
+    //ide jön majd a toast meghívása, azzal pl, hogy Sikeresen eltávolítottad a felhasználót.
     deleteUser(userId);
   }
 
@@ -147,6 +148,9 @@ function buttonsAction() {
       removeBtn.forEach((element) => {
         element.disabled = false;
       });
+      cancelBtn.forEach((element) => {
+        element.removeEventListener("click", cancelModifi);
+      });
     }
 
     const saveBtn = document.querySelectorAll(".save");
@@ -156,7 +160,35 @@ function buttonsAction() {
     });
     //user módosításának megerősítése -----------------------
     function modifiUserData() {
-      console.log(emailAddress.value);
+      const nameValidator =
+        /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/;
+
+      if (nameValidator.test(userName.value)) {
+        console.log("valid név");
+      } else {
+        alert("Nem megfelelő név!");
+        return false;
+      }
+
+      const emailValidator = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+      if (emailValidator.test(emailAddress.value)) {
+        console.log("valid email");
+      } else {
+        alert("Nem megfelelő e-mail cím!");
+        return false;
+      }
+
+      const addressValidator =
+        /^(\d+) ?([A-Za-z](?= ))? (.*?) ([^ ]+?) ?((?<= )APT)? ?((?<= )\d*)?$/;
+
+      if (addressValidator.test(address.value)) {
+        console.log("valid cím");
+      } else {
+        alert("Nem megfelelő cím!");
+        return false;
+      }
+
       modedUser = {
         id: userId,
         name: userName.value,
@@ -183,6 +215,14 @@ function buttonsAction() {
         element.disabled = false;
       });
       editUser(userId);
+      saveBtn.forEach((element) => {
+        element.removeEventListener("click", modifiUserData);
+      });
+
+      //ide jön majd a toast meghívása, azzal pl, hogy Sikeresen módosítottad a felhasználót.
+      saveBtn.forEach((element) => {
+        element.removeEventListener("click", modifiUserData);
+      });
     }
   }
 
@@ -223,6 +263,35 @@ function buttonsAction() {
     addNewUserBtn.addEventListener("click", postNewUser);
 
     function postNewUser() {
+      const nameValidator =
+        /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/;
+
+      if (nameValidator.test(newUserName.value)) {
+        console.log("valid név");
+      } else {
+        alert("Nem megfelelő név!");
+        return false;
+      }
+
+      const emailValidator = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+      if (emailValidator.test(newUserEmail.value)) {
+        console.log("valid email");
+      } else {
+        alert("Nem megfelelő e-mail cím!");
+        return false;
+      }
+
+      const addressValidator =
+        /^(\d+) ?([A-Za-z](?= ))? (.*?) ([^ ]+?) ?((?<= )APT)? ?((?<= )\d*)?$/;
+
+      if (addressValidator.test(newUserAddress.value)) {
+        console.log("valid cím");
+      } else {
+        alert("Nem megfelelő cím!");
+        return false;
+      }
+
       newUser = {
         id: Number(newUserId.textContent),
         name: newUserName.value,
@@ -230,7 +299,9 @@ function buttonsAction() {
         address: newUserAddress.value,
       };
       newUserBtn.disabled = false;
+      //ide jön majd a toast meghívása, azzal pl, hogy Sikeresen hozzáadtad a felhasználót.
       addUser();
+      addNewUserBtn.removeEventListener("click", postNewUser);
     }
 
     undoNewUserBtn.addEventListener("click", undoNewUser);
@@ -238,6 +309,7 @@ function buttonsAction() {
     function undoNewUser(e) {
       e.target.closest("tr").remove();
       newUserBtn.disabled = false;
+      undoNewUserBtn.removeEventListener("click", undoNewUser);
     }
   }
 }
