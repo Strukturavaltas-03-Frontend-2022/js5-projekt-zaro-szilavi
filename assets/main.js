@@ -1,3 +1,5 @@
+//import createDeleteUserToast from "./assets/toast.js";
+
 const url = "http://localhost:3000/users/";
 let modedUser = {};
 let newUser = {};
@@ -74,7 +76,8 @@ function buttonsAction() {
   function deleteRow(e) {
     let userId = e.target.closest("tr").querySelector(".id").textContent;
     e.target.closest("tr").remove();
-    //ide jön majd a toast meghívása, azzal pl, hogy Sikeresen eltávolítottad a felhasználót.
+    createDeleteUserToast();
+    //itt még a paraméterek átadása nem jó
     deleteUser(userId);
   }
 
@@ -90,7 +93,7 @@ function buttonsAction() {
     let emailAddress = e.target.closest("tr").querySelector(".input-email");
     let address = e.target.closest("tr").querySelector(".input-address");
 
-    tempUser = {
+    let tempUser = {
       id: userId,
       name: userName.value,
       emailAddress: emailAddress.value,
@@ -124,7 +127,7 @@ function buttonsAction() {
     });
 
     function cancelModifi() {
-      userId.value = tempUser.id;
+      userId = tempUser.id;
       userName.value = tempUser.name;
       emailAddress.value = tempUser.emailAddress;
       address.value = tempUser.address;
@@ -218,15 +221,14 @@ function buttonsAction() {
       saveBtn.forEach((element) => {
         element.removeEventListener("click", modifiUserData);
       });
-
-      //ide jön majd a toast meghívása, azzal pl, hogy Sikeresen módosítottad a felhasználót.
+      createModifiUserToast();
       saveBtn.forEach((element) => {
         element.removeEventListener("click", modifiUserData);
       });
     }
   }
 
-  // új user hozzáadása ------------------------------
+  // ÚJ USER HOZZÁADÁSA ------------------------------
   const createNewUser = document.querySelector(".newUser");
 
   createNewUser.addEventListener("click", createNewRow);
@@ -299,8 +301,11 @@ function buttonsAction() {
         address: newUserAddress.value,
       };
       newUserBtn.disabled = false;
-      //ide jön majd a toast meghívása, azzal pl, hogy Sikeresen hozzáadtad a felhasználót.
+      createNewUserToast();
       addUser();
+      setTimeout(() => {
+        setUpTable();
+      }, 5000);
       addNewUserBtn.removeEventListener("click", postNewUser);
     }
 
@@ -314,4 +319,56 @@ function buttonsAction() {
   }
 }
 
+//TOAST --------------------------------------------------------------------
+
+let toastContainer;
+
+(function initToast() {
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    `<div class="toast__container"</div>`
+  );
+  toastContainer = document.querySelector(".toast__container");
+})();
+
+function createDeleteUserToast() {
+  toastContainer.insertAdjacentHTML(
+    "beforeend",
+    `<p class='deleteUserToast'>
+    Sikeresen törölted a felhasználót!
+    </p>`
+  );
+  const toast = toastContainer.lastElementChild;
+  toast.addEventListener("animationend", () => {
+    toast.remove();
+  });
+}
+
+function createModifiUserToast() {
+  toastContainer.insertAdjacentHTML(
+    "beforeend",
+    `<p class='modifiUserToast'>
+    Sikeresen módosítottad a felhasználó adatait!
+    </p>`
+  );
+  const toast = toastContainer.lastElementChild;
+  toast.addEventListener("animationend", () => {
+    toast.remove();
+  });
+}
+
+function createNewUserToast() {
+  toastContainer.insertAdjacentHTML(
+    "beforeend",
+    `<p class='NewUserToast'>
+    Sikeresen hozzáadtál egy új felhasználót a listához!
+    </p>`
+  );
+  const toast = toastContainer.lastElementChild;
+  toast.addEventListener("animationend", () => {
+    toast.remove();
+  });
+}
+
 //tryokat pls
+//valami borzasztóan működik, egy rakásszor újra meg vannak hívva a dolgok
