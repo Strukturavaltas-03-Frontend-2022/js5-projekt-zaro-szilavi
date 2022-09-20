@@ -18,15 +18,14 @@ async function setUpTable() {
 
   for (let i = 0; i < users.length; i++) {
     rowsHTML += `
-    <tr>
+    <tr class="tr-inputs">
     <td class="id">${users[i].id}</td>
     <td><input class="input-name" readonly="" value="${users[i].name}"></td>
     <td><input class="input-email" readonly="" value="${users[i].emailAddress}"></td>
     <td><input class="input-address" readonly="" value="${users[i].address}"></td>
-    <td><button type="button" class="edit">Szerkesztés</button></td>
-    <td><button type="button" class="remove">Törlés</button></td>
-    <td><button type="button" class="save" style="visibility: hidden;">Mentés</button></td>
-    <td><button type="button" class="cancel" style="visibility: hidden;">Visszavonás</button></td>
+    <td><button type="button" class="edit"><i class="fa-regular fa-pen-to-square"></i> Szerkesztés</button></td>
+    <td><button type="button" class="remove"><i class="fa-solid fa-trash-can"></i> Törlés</button></td>
+    <td style="visibility: hidden"><button type="button" class="save" style="visibility: hidden;"><i class="fa-regular fa-floppy-disk"></i></button><button type="button" class="cancel" style="visibility: hidden;"><i class="fa-solid fa-ban"></i></button></td>
     </tr>
     `;
   }
@@ -249,8 +248,8 @@ function buttonsAction() {
     <td><input class="newUser-input-name"></td>
     <td><input class="newUser-input-email"></td>
     <td><input class="newUser-input-address"></td>
-    <td><button type="button" class="addUser" style="visibility: visible;">Hozzáad</button></td>
-    <td><button type="button" class="undoUser" style="visibility: visible;">Mégse</button></td>
+    <td><button type="button" class="addUser" style="visibility: visible;"><i class="fa-solid fa-plus"></i> Hozzáad</button></td>
+    <td><button type="button" class="undoUser" style="visibility: visible;"><i class="fa-solid fa-xmark"></i> Mégse</button></td>
     </tr>
     `;
     tBody.innerHTML = newUSerRow + tBody.innerHTML;
@@ -317,6 +316,7 @@ function buttonsAction() {
       undoNewUserBtn.removeEventListener("click", undoNewUser);
     }
   }
+  const disabledBtn = document.querySelectorAll("button[disabled]");
 }
 
 //TOAST --------------------------------------------------------------------
@@ -372,3 +372,7 @@ function createNewUserToast() {
 
 //tryokat pls
 //valami borzasztóan működik, egy rakásszor újra meg vannak hívva a dolgok
+//de persze néha csak simán nem működnek utána a gombok
+//nem írja ki, ha nem validak a beírt adatok
+//még az új felhasználónálónál nem disabled az összes gomb, ez azért nincs beállítva, mert addig nem nyomkodom, amíg nem jövök rá mi a gubanc ennél a résznél
+//a disabled gombok nem írják ki, hogy először fejezzem be a megkezdet munkát
