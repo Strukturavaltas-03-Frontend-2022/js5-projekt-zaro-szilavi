@@ -7,9 +7,15 @@ let editInProgress = false;
 
 //ADATOK KIOLVASÁSA ÉS MEGJELENÍTÉSE--------------------------------------------
 async function get(url) {
-  const response = await fetch(url);
-  const users = await response.json();
-  return users;
+  try {
+    const response = await fetch(url);
+    const users = await response.json();
+    return users;
+  } catch (e) {
+    console.error(e.message);
+    console.log("Baj van, valami nagyon nem oké!");
+    return [];
+  }
 }
 get(url);
 
@@ -74,7 +80,7 @@ function buttonsAction() {
   });
 
   function deleteRow(e) {
-    if(editInProgress) {
+    if (editInProgress) {
       inprogressToast();
       return false;
     }
@@ -91,7 +97,7 @@ function buttonsAction() {
   });
 
   function editRow(e) {
-    if(editInProgress) {
+    if (editInProgress) {
       inprogressToast();
       return false;
     }
@@ -101,11 +107,11 @@ function buttonsAction() {
     let emailAddress = e.target.closest("tr").querySelector(".input-email");
     let address = e.target.closest("tr").querySelector(".input-address");
 
-    let allTd = e.target.closest("tr").querySelectorAll("td")
+    let allTd = e.target.closest("tr").querySelectorAll("td");
 
-    allTd.forEach(td => {
-      td.style.background = "#ffc107"
-    })
+    allTd.forEach((td) => {
+      td.style.background = "#ffc107";
+    });
 
     let tempUser = {
       id: userId,
@@ -149,20 +155,24 @@ function buttonsAction() {
         "visible";
       e.target.closest("tr").querySelector(".remove").style.visibility =
         "visible";
-      allTd.forEach(td => {
-          td.style.background = "#D3D3D3"
-        })
+      allTd.forEach((td) => {
+        td.style.background = "#D3D3D3";
+      });
 
       editInProgress = false;
       cancelBtn.forEach((element) => {
         element.removeEventListener("click", cancelModifi);
+      });
+
+      saveBtn.forEach((element) => {
+        element.removeEventListener("click", modifiUserData);
       });
     }
 
     const saveBtn = document.querySelectorAll(".save");
 
     saveBtn.forEach((element) => {
-      element.addEventListener("click", modifiUserData);    
+      element.addEventListener("click", modifiUserData);
     });
     //user módosításának megerősítése -----------------------
     function modifiUserData() {
@@ -172,7 +182,7 @@ function buttonsAction() {
       if (nameValidator.test(userName.value)) {
         console.log("valid név");
       } else {
-        notValidToast("név")
+        notValidToast("név");
         return false;
       }
 
@@ -217,9 +227,9 @@ function buttonsAction() {
       saveBtn.forEach((element) => {
         element.removeEventListener("click", modifiUserData);
       });
-      allTd.forEach(td => {
-        td.style.background = "#D3D3D3"
-      })
+      allTd.forEach((td) => {
+        td.style.background = "#D3D3D3";
+      });
       createModifiUserToast();
       editInProgress = false;
     }
@@ -231,7 +241,7 @@ function buttonsAction() {
   createNewUser.addEventListener("click", createNewRow);
 
   function createNewRow() {
-    if(editInProgress) {
+    if (editInProgress) {
       inprogressToast();
       return false;
     }
@@ -251,12 +261,12 @@ function buttonsAction() {
     <td style="background:#ffc107"><input class="newUser-input-name"></td>
     <td style="background:#ffc107"><input class="newUser-input-email"></td>
     <td style="background:#ffc107"><input class="newUser-input-address"></td>
-    <td><button type="button" class="addUser" style="visibility: visible;"><i class="fa-solid fa-plus"></i> Hozzáad</button></td>
-    <td><button type="button" class="undoUser" style="visibility: visible;"><i class="fa-solid fa-xmark"></i> Mégse</button></td>
+    <td style="background:#ffc107"><button type="button" class="addUser" style="visibility: visible;"><i class="fa-solid fa-plus"></i> Hozzáad</button></td>
+    <td style="background:#ffc107"><button type="button" class="undoUser" style="visibility: visible;"><i class="fa-solid fa-xmark"></i> Mégse</button></td>
     </tr>
     `;
     //tBody.innerHTML = newUSerRow + tBody.innerHTML;
-    tBody.insertAdjacentHTML('beforebegin',newUSerRow);
+    tBody.insertAdjacentHTML("beforebegin", newUSerRow);
 
     const newUserId = document.querySelector(".id");
     const newUserName = document.querySelector(".newUser-input-name");
@@ -293,7 +303,7 @@ function buttonsAction() {
       if (addressValidator.test(newUserAddress.value)) {
         console.log("valid cím");
       } else {
-        notValidToast("cím")
+        notValidToast("cím");
         return false;
       }
 
@@ -373,7 +383,6 @@ function createNewUserToast() {
   });
 }
 
-
 function inprogressToast() {
   toastContainer.insertAdjacentHTML(
     "beforeend",
@@ -399,7 +408,3 @@ function notValidToast(input) {
     toast.remove();
   });
 }
-
-//tryokat pls
-//Amennyiben a beírt adatok nem validak, egy hibaüzenetet kell megjeleníteni, amely 5 másodperc után eltűnik
-//(alert helyett valami toast csak piros háttérszínnel)

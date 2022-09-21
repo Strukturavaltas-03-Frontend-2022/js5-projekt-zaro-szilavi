@@ -31,7 +31,7 @@
 
 .table td {
   border: 1px solid #e4eff8;
-  background-color: #D3D3D3;
+  background-color: #d3d3d3;
 }
 
 .table .tr-inputs {
@@ -47,7 +47,7 @@
 }
 
 .newUserTd {
-  background-color: #ffc107
+  background-color: #ffc107;
 }
 
 .edit,
@@ -140,7 +140,7 @@ input {
   border-style: none;
   text-align: center;
   text-overflow: ellipsis;
-  background-color: inherit
+  background-color: inherit;
 }
 
 input:focus {
@@ -208,3 +208,17 @@ input:focus {
     opacity: 1;
   }
 }
+
+@media only screen and (max-width: 1250px) {
+  .save {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .cancel {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 8px;
+  }
+} ;
